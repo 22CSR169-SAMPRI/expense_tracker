@@ -2,7 +2,7 @@ import React, { useContext, useState } from "react"
 import axios from 'axios'
 
 
-const BASE_URL = "https://expense-tracker-1-mzyl.onrender.com";
+const BASE_URL = "https://expense-tracker-3gn2.onrender.com";
 
 
 const GlobalContext = React.createContext()
