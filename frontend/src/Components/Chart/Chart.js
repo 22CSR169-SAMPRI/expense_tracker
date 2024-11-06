@@ -14,6 +14,8 @@ import {Line} from 'react-chartjs-2'
 import styled from 'styled-components'
 import { useGlobalContext } from '../../context/globalContext'
 import { dateFormat } from '../../utils/dateFormat'
+import { PieChart } from '@mui/x-charts/PieChart';
+import axios from 'axios'
 
 ChartJs.register(
     CategoryScale,
@@ -66,6 +68,23 @@ function Chart() {
             <Line data={data} />
         </ChartStyled>
     )
+    // return(
+        
+    //     <PieChart
+    //     series={[
+    //         {
+    //             data:[
+    //                 { id: 0, value: 10, label: 'series A' },
+    //                 { id: 1, value: 15, label: 'series B' },
+    //                 { id: 2, value: 20, label: 'series C' },
+    //             ]
+    //         },
+    //       ]}
+    //       width={400}
+    //       height={200}
+    //       />
+        //  
+    // )
 }
 
 const ChartStyled = styled.div`

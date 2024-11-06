@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 import styled from 'styled-components'
 import { useGlobalContext } from '../../context/globalContext';
 import History from '../../History/History';
@@ -6,35 +6,24 @@ import { InnerLayout } from '../../styles/Layouts';
 import { rupee } from '../../utils/Icons';
 import Chart from '../Chart/Chart';
 
-function Dashboard() {
-    const {totalExpenses,incomes, expenses, totalIncome, totalBalance, getIncomes, getExpenses, getReport } = useGlobalContext()
-    const [start,setStart] = useState('');
-    const [end,setEnd] = useState('');
-    const [reportAvailable,setReportAvailable] = useState([]);
+function Transaction() {
+    const {totalExpenses,incomes, expenses, totalIncome, totalBalance, getIncomes, getExpenses, incomeTransaction, expenseTransaction, getIncomeLog, getExpenseLog } = useGlobalContext()
 
     useEffect(() => {
         getIncomes()
         getExpenses()
+        getIncomeLog()
+        getExpenseLog()
     }, [])
 
-    const report = async () => {
-        await getReport(start,end).then((res)=>{
-            console.log(res)
-            setReportAvailable(res);
-        })
-        
-    }
-
-    const TableComponent = () => {
+    const TableComponent = ({}) => {
         try
         {
-            if(reportAvailable.length==0)
-            {
-                return(
-                    <div></div>
-                )
-            }
-            const data = reportAvailable;
+        const data = [...incomeTransaction, ...expenseTransaction]
+        data.sort((a,b)=>new Date(b.date)-new Date(a.date))
+        const headers = Object.keys(data[0]);
+        console.log(headers);
+    
         return (
             <div className="log">
                 <table border="1" cellPadding="20" cellSpacing="0">
@@ -57,7 +46,6 @@ function Dashboard() {
                         ))}
                     </tbody>
                 </table>
-                <button type="button" onClick={downloadJson}>Download</button>
             </div>
         );
     }
@@ -67,20 +55,6 @@ function Dashboard() {
             <div>Hello</div>
         )
     }
-    };
-
-    const downloadJson = () => {
-        const json = JSON.stringify(reportAvailable, null, 2); // Convert data to JSON string
-        const blob = new Blob([json], { type: 'application/json' }); // Create a Blob from the JSON string
-        const url = URL.createObjectURL(blob); // Create a URL for the Blob
-
-        const link = document.createElement('a'); // Create a temporary anchor element
-        link.href = url; // Set the href to the Blob URL
-        link.download = 'data.json'; // Set the desired file name
-        document.body.appendChild(link); // Append the link to the document
-        link.click(); // Programmatically click the link to trigger the download
-        document.body.removeChild(link); // Remove the link from the document
-        URL.revokeObjectURL(url); // Clean up by revoking the Object URL
     };
 
     return (
@@ -110,13 +84,10 @@ function Dashboard() {
                                 </p>
                             </div>
                         </div>
-                        <h1>Get Report</h1>
-                        <p>Start Date</p>
-                        <input type="datetime-local" value={start} onChange={(e)=>{setStart(e.target.value)}} />
-                        <p>End Date</p>
-                        <input type="datetime-local" value={end} onChange={(e)=>{setEnd(e.target.value)}} />
-                        <button type="button" onClick={report}>send</button>
+                        <h1>Last 3 Months Transactions</h1>
+                        <div className="table">
                         <TableComponent/>
+                        </div>
                     </div>
                     <div className="history-con">
                         <History />
@@ -218,14 +189,77 @@ const DashboardStyled = styled.div`
             }
         }
     }
-        .expense{
-        color:#F00;
+        .table{
+        display: flex;
+        flex-direction: row;
+        width:150%;
+        padding:10px;
         }
         .log{
         display: block;
         margin:20px;
         width:100%;
         }
+        /* Basic table setup */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: Arial, sans-serif;
+    border-radius:20px;
+}
+
+/* Table header styling */
+th {
+    background-color: #AAA;
+    color: white;
+    padding: 12px;
+    text-align: left;
+    font-weight: bold;
+}
+
+/* Table cell styling */
+td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+/* Alternating row colors */
+tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+tr:nth-child(odd) {
+    background-color: #fff;
+}
+
+/* Hover effect */
+tr:hover {
+    background-color: #f1f1f1;
+}
+
+/* Responsive styling */
+@media (max-width: 600px) {
+    table, th, td {
+        display: block;
+        width: 100%;
+    }
+    th, td {
+        text-align: right;
+        padding-left: 50%;
+        position: relative;
+    }
+    th::before, td::before {
+        content: attr(data-label);
+        position: absolute;
+        left: 15px;
+        font-weight: bold;
+    }
+}
+    .expense{
+    color:#F00;
+    }
+
 `;
 
-export default Dashboard
+export default Transaction

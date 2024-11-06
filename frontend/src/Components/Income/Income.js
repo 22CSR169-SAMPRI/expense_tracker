@@ -4,6 +4,7 @@ import { useGlobalContext } from '../../context/globalContext';
 import { InnerLayout } from '../../styles/Layouts';
 import Form from '../Form/Form';
 import IncomeItem from '../IncomeItem/IncomeItem';
+import { PieChart } from '@mui/x-charts/PieChart';
 
 function Income() {
     const {addIncome,incomes, getIncomes, deleteIncome, totalIncome} = useGlobalContext()
@@ -11,6 +12,58 @@ function Income() {
     useEffect(() =>{
         getIncomes()
     }, [])
+
+    const processData = () => {
+        const incomeData = incomes
+        .map(item => ({ ...item, amount: parseFloat(item.amount) }));
+    
+    // Sort income data in descending order by amount
+    incomeData.sort((a, b) => b.amount - a.amount);
+
+    // Separate the top 4 and the rest
+    const top4Income = incomeData.slice(0, 4);
+    const otherIncomeAmount = incomeData.slice(4).reduce((sum, item) => sum + item.amount, 0);
+
+    // Format the result as required
+    const result = top4Income.map(item => ({
+        label: item.category,
+        value: item.amount,
+    }));
+
+    // Add the "Other Income" if applicable
+    if (otherIncomeAmount > 0) {
+        result.push({
+            label: "Other",
+            value: otherIncomeAmount,
+        });
+    }
+
+    // console.log("data",result);
+    const combinedData = {};
+
+    let id=1;
+    // Loop through the data and aggregate values by label
+    result.forEach(item => {
+        if (combinedData[item.label]) {
+            combinedData[item.label] += item.value;
+        } else {
+            combinedData[item.label] = item.value;
+        }
+        // combinedData[item.id] = id;
+        // id++;
+    });
+
+    // Convert the combined data object to an array
+
+    const resultcombined =  Object.keys(combinedData).map(label => ({
+        label: label,
+        value: combinedData[label],
+        id: id++
+    }));
+    console.log("data",resultcombined);
+    return resultcombined;
+    }
+
     return (
         <IncomeStyled>
             <InnerLayout>
@@ -38,6 +91,16 @@ function Income() {
                         })}
                     </div>
                 </div>
+                <h1>Pie Chart representing the Income based on Categories</h1>
+                <PieChart
+                series={[
+                    {
+                        data:processData()
+                    },
+                ]}
+                width={400}
+                height={200}
+                />
             </InnerLayout>
         </IncomeStyled>
     )

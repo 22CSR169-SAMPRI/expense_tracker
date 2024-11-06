@@ -2,7 +2,7 @@ import React, { useContext, useState } from "react"
 import axios from 'axios'
 
 
-const BASE_URL = "http:localhost:5000/api/v1";
+const BASE_URL = "http://localhost:5000/api/v1/";
 
 
 const GlobalContext = React.createContext()
@@ -12,6 +12,8 @@ export const GlobalProvider = ({children}) => {
     const [incomes, setIncomes] = useState([])
     const [expenses, setExpenses] = useState([])
     const [error, setError] = useState(null)
+    const [incomeTransaction,setIncomeTransaction] = useState([]);
+    const [expenseTransaction,setExpenseTransaction] = useState([]);
 
     //calculate incomes
     const addIncome = async (income) => {
@@ -23,7 +25,7 @@ export const GlobalProvider = ({children}) => {
     }
 
     const getIncomes = async () => {
-        const response = await axios.get(`${BASE_URL}get-incomes`)
+        const response = await axios.get(`http://localhost:5000/api/v1/get-incomes`)
         setIncomes(response.data)
         console.log(response.data)
     }
@@ -86,6 +88,33 @@ export const GlobalProvider = ({children}) => {
         return history.slice(0, 3)
     }
 
+    const getIncomeLog = async () => {
+        const result = await axios.get(`${BASE_URL}get-income-log`)
+        const income = result.data
+        income.map((item)=>({
+            ...item,
+            type:"income"
+        }))
+        setIncomeTransaction(income)
+
+    }
+    const getExpenseLog = async () => {
+        const result = await axios.get(`${BASE_URL}get-expense-log`)
+        const expense = result.data
+        expense.map((item)=>({
+            ...item,
+            type:"expense"
+        }))
+        setExpenseTransaction(expense)
+
+    }
+
+    const getReport = async (start,end) => {
+        console.log(start,end)
+        const result = await axios.post(`${BASE_URL}get-report`,{start:start,end:end})
+        return result.data
+    }
+
 
     return (
         <GlobalContext.Provider value={{
@@ -102,7 +131,12 @@ export const GlobalProvider = ({children}) => {
             totalBalance,
             transactionHistory,
             error,
-            setError
+            setError,
+            incomeTransaction,
+            expenseTransaction,
+            getIncomeLog,
+            getExpenseLog,
+            getReport
         }}>
             {children}
         </GlobalContext.Provider>

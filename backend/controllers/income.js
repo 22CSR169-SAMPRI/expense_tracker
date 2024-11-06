@@ -48,3 +48,21 @@ exports.deleteIncome = async (req, res) =>{
             res.status(500).json({message: 'Server Error'})
         })
 }
+
+exports.getIncomeLog = async (req,res) => {
+    const threeMonthsAgo = new Date();
+    threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
+    try
+    {
+        const query = {
+            date: { $gte: threeMonthsAgo }
+        };
+
+        const result = await IncomeSchema.find(query).sort({date:-1})
+        res.send(result)
+    }
+    catch(err)
+    {
+        res.json({message:'Server Error'})
+    }
+}
