@@ -6,8 +6,9 @@ exports.getReport = async (req,res) => {
         let {start,end} = req.body
         start = new Date(start)
         end = new Date(end)
+        console.log(start,end)
         const query = {
-            createdAt: {
+            date: {
                 $gte: start,
                 $lte: end
             }
@@ -20,7 +21,7 @@ exports.getReport = async (req,res) => {
     }
     catch(err)
     {
-        console.log(err)
+        console.log("Select the start and end date")
         res.json({message:"Server Error"})
     }
 }

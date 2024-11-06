@@ -58,7 +58,9 @@ exports.getExpenseLog = async (req,res) => {
             date: { $gte: threeMonthsAgo }
         };
 
-        const result = await ExpenseSchema.find(query).sort({date:-1})
+        const result = await ExpenseSchema.find(query)
+        //console.log(result)
+        result.sort((a,b)=>new Date(b.date)-new Date(a.date))
         res.send(result)
     }
     catch(err)

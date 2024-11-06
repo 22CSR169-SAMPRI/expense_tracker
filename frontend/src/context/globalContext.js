@@ -82,7 +82,7 @@ export const GlobalProvider = ({children}) => {
     const transactionHistory = () => {
         const history = [...incomes, ...expenses]
         history.sort((a, b) => {
-            return new Date(b.createdAt) - new Date(a.createdAt)
+            return new Date(b.date) - new Date(a.date)
         })
 
         return history.slice(0, 3)
@@ -101,10 +101,7 @@ export const GlobalProvider = ({children}) => {
     const getExpenseLog = async () => {
         const result = await axios.get(`${BASE_URL}get-expense-log`)
         const expense = result.data
-        expense.map((item)=>({
-            ...item,
-            type:"expense"
-        }))
+        console.log(expense)
         setExpenseTransaction(expense)
 
     }
