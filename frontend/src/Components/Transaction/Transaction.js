@@ -5,6 +5,8 @@ import History from '../../History/History';
 import { InnerLayout } from '../../styles/Layouts';
 import { rupee } from '../../utils/Icons';
 import Chart from '../Chart/Chart';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 function Transaction() {
     const {totalExpenses,incomes, expenses, totalIncome, totalBalance, getIncomes, getExpenses, incomeTransaction, expenseTransaction, getIncomeLog, getExpenseLog, getReport } = useGlobalContext()
@@ -26,19 +28,34 @@ function Transaction() {
         })
         
     }
-    const downloadJson = () => {
-        const json = JSON.stringify(reportAvailable, null, 2); // Convert data to JSON string
-        const blob = new Blob([json], { type: 'application/json' }); // Create a Blob from the JSON string
-        const url = URL.createObjectURL(blob); // Create a URL for the Blob
+    
 
-        const link = document.createElement('a'); // Create a temporary anchor element
-        link.href = url; // Set the href to the Blob URL
-        link.download = 'data.json'; // Set the desired file name
-        document.body.appendChild(link); // Append the link to the document
-        link.click(); // Programmatically click the link to trigger the download
-        document.body.removeChild(link); // Remove the link from the document
-        URL.revokeObjectURL(url); // Clean up by revoking the Object URL
+    
+
+    const downloadPDF = () => {
+        const doc = new jsPDF();
+        doc.setFontSize(18);
+        doc.text("Report", 14, 20);
+    
+        
+        autoTable(doc, {
+            head: [["Title", "Amount", "Category", "Date"]],
+            body: reportAvailable.map(item => [
+                item.title,
+                item.type === "income" ? item.amount : `-${item.amount}`,
+                item.category,
+                item.date.slice(0, 10)
+            ]),
+            startY: 30, 
+            theme: 'striped', 
+        });
+    
+        // Save
+        doc.save('report.pdf');
     };
+    
+
+
 
     const TableComponent = () => {
         try
@@ -72,7 +89,7 @@ function Transaction() {
                         ))}
                     </tbody>
                 </table>
-                <button type="button" onClick={downloadJson}>Download</button>
+                <button type="button" onClick={downloadPDF}>Download</button>
             </div>
         );
     }
@@ -128,40 +145,15 @@ function Transaction() {
     return (
         <DashboardStyled>
             <InnerLayout>
-                {/* <h1>All Transactions</h1> */}
+                
                  <div className="stats-con">
                     <div className="chart-con">
-                        {/* <Chart /> */}
-                         {/* <div className="amount-con">
-                             <div className="income">
-                                 <h2>Total Income</h2>
-                                 <p>
-                                     {rupee} {totalIncome()}
-                                 </p>
-                             </div>
-                             <div className="expense">
-                                 <h2>Total Expense</h2>
-                                 <p>
-                                     {rupee} {totalExpenses()}
-                                 </p>
-                             </div>
-                             <div className="balance">
-                                 <h2>Total Balance</h2>
-                                 <p>
-                                     {rupee} {totalBalance()}
-                                 </p>
-                             </div>
-                         </div> */}
+                        
                         <h1>Last 3 Months Transactions</h1>
                         <div className="table">
                         <TableTransactionComponent/>
                         </div>
-                        {/* <h1>Get Report</h1>
-                        <p>Start Date</p>
-                        <input type="datetime-local" value={start} onChange={(e)=>{setStart(e.target.value)}} />
-                        <p>End Date</p>
-                        <input type="datetime-local" value={end} onChange={(e)=>{setEnd(e.target.value)}} />
-                        <button type="button" onClick={report}>send</button> */}
+                        
                         <div style={{
     width: '100%',
     maxWidth: '400px',
@@ -243,27 +235,7 @@ function Transaction() {
 
                         <TableComponent/>
                     </div>
-                    {/* <div className="history-con">
-                        <History />
-                        <h2 className="salary-title">Min <span>Salary</span>Max</h2>
-                        <div className="salary-item">
-                            <p>
-                            ₹{Math.min(...incomes.map(item => item.amount))}
-                            </p>
-                            <p>
-                            ₹{Math.max(...incomes.map(item => item.amount))}
-                            </p>
-                        </div>
-                        <h2 className="salary-title">Min <span>Expense</span>Max</h2>
-                        <div className="salary-item">
-                            <p>
-                            ₹{Math.min(...expenses.map(item => item.amount))}
-                            </p>
-                            <p>
-                            ₹{Math.max(...expenses.map(item => item.amount))}
-                            </p>
-                        </div>
-                    </div> */}
+                    
                 </div> 
             </InnerLayout>
         </DashboardStyled>
@@ -417,3 +389,4 @@ tr:hover {
 `;
 
 export default Transaction
+
