@@ -2,8 +2,7 @@ import React, { useContext, useState } from "react"
 import axios from 'axios'
 
 
-const BASE_URL = "http://localhost:5000/api/v1/";
-// https://expense-tracker-2-s91b.onrender.com
+const BASE_URL = "https://expense-tracker-backend-hhih.onrender.com";
 
 const GlobalContext = React.createContext()
 
@@ -25,7 +24,7 @@ export const GlobalProvider = ({children}) => {
     }
 
     const getIncomes = async () => {
-        const response = await axios.get(`http://localhost:5000/api/v1/get-incomes`)
+        const response = await axios.get(`${BASE_URL}get-incomes`)
         setIncomes(response.data)
         console.log(response.data)
     }

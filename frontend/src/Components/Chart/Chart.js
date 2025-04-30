@@ -68,21 +68,7 @@ function Chart() {
             <Line data={data} />
         </ChartStyled>
     )
-    // return(
-        
-    //     <PieChart
-    //     series={[
-    //         {
-    //             data:[
-    //                 { id: 0, value: totalIncome(), label: 'Income' },
-    //                 { id: 1, value: totalExpenses(), label: 'Expenses' },
-    //             ]
-    //         },
-    //       ]}
-    //       width={400}
-    //       height={200}
-    //       />
-    // )
+    
 }
 
 const ChartStyled = styled.div`
