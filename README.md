@@ -1,1 +1,1 @@
-https://vercel.com/samprithas-projects/expense-tracker-8ob1 
+https://expense-tracker-8ob1.vercel.app/
